@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="./c3-0.3.0/c3.css" rel="stylesheet" type="text/css">
+    <script src="./d3/d3.min.js" charset="utf-8"></script>
+    <script src="./c3-0.3.0/c3.min.js"></script>
+</head>
+
+<body>
+    <div id="chart"></div>
+
+    <script>
+var row_start = 4;
+var row_step = 3;
+var col_year = 0;
+var col_sum = 2;
+var col_born = 3;
+var col_die = 13;
+
+var kh_x_years = [];
+var kh_sum = [ 'pop_sum' ];
+var kh_born = [ 'pop_born' ];
+var kh_die = [ 'pop_die' ];
+
+d3.text("./kh-pop_src.csv", "text/csv", function (row) {
+    var rows = d3.csv.parseRows(row);
+    for(row_pt = row_start ; row_pt < rows.length ; row_pt += row_step) {
+        var new_row = [];
+        kh_x_years.push(rows[row_pt][col_year]);
+        kh_sum.push(rows[row_pt][col_sum]);
+        kh_born.push(rows[row_pt][col_born]);
+        kh_die.push(rows[row_pt][col_die]);
+    }
+
+    var chart = default_chart();
+});
+
+
+
+default_chart = function () {
+    return c3.generate({
+            bindto: '#chart',
+            data: {
+                columns: [
+                    kh_born,
+                    kh_die,
+                    kh_sum
+                ],
+                axes: {
+                    'pop_born': 'y',
+                    'pop_sum': 'y2'
+                },
+                names: {
+                    pop_sum: '總人口數',
+                    pop_born: '出生人數',
+                    pop_die: '死亡人數'
+                }
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: kh_x_years,
+                    tick: {
+                        culling: { max: 10 }
+                    }
+                },
+                y: {
+                    label: {
+                        text: '人',
+                        position: 'outer-middle'
+                    }
+                },
+                y2: {
+                    show: true,
+                    label: {
+                        text: '千人',
+                        position: 'outer-middle'
+                    },
+                    tick: {
+                        format: function (x) { return x/1000; }
+                    }
+                }
+            }
+    });
+}
+
+    </script>
+</body>
+</html>
